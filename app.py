@@ -35,13 +35,12 @@ def login():
 
 @app.route("/games/minesweeper", methods = ['GET', 'POST'])
 def mine():
-    
     return send_file('static/games/minesweeper/intro.html')
 
 @app.route("/games/minesweeper/game", methods = ['GET', 'POST'])
 def mineGame():
-    
     return send_file('static/games/minesweeper/minesweeper.html')
+
 @app.errorhandler(404)
 def notFound(error):
     return send_file('static/404.html'),404
@@ -49,8 +48,9 @@ def notFound(error):
 @app.route('/<game>/game', methods = ['GET','PUT','POST'])
 def indexGame(game):
     if request.method == 'GET' and 'id' not in request.args: return send_file(f'static/games/{game}/intro.html')
+
     if request.method == 'POST': 
-            if 'rows' not in request.args or 'cols' not in request.args or 'name' not in request.args: return "ERROR: missing arguments"
+            if 'rows' not in request.form or 'cols' not in request.form or 'name' not in request.form: return "ERROR: missing arguments"
             rows = int(request.form.get('rows'))
             cols = int(request.form.get('cols'))
             name = request.form.get('name')
@@ -59,20 +59,19 @@ def indexGame(game):
             runningGames[str(id)] = Minegame
             send_file(f'static/games/{game}/{game}.html')
             return redirect(f'/{game}/game?id={id}')
-            return send_file(f'static/games/{game}/{game}.html')
+
     if 'id' not in request.args:
         return "Error: No game id"
     ID = request.args.get('id')
     if ID in runningGames.keys() :
-        if request.method == 'GET': return send_file(f'static/games/{game}/{game}.html')
+        if request.method == 'GET': 
+            return send_file(f'static/games/{game}/{game}.html')
         
         else:
             currentGame = runningGames[ID]
             jsonData = request.get_json()
             if jsonData.get("action") == 'board':
-                boar = {
-
-                }
+                boar = { }
                 for i in range(currentGame.rows):
                     for j in range(currentGame.cols):
                         boar[(i,j)] = currentGame.getSpace(i,j)
@@ -91,24 +90,17 @@ def indexGame(game):
             elif jsonData.get("action") == 'score':
                 return jsonify({'score': currentGame.score})
             elif jsonData.get("action") == 'time':
-                return jsonify({'score': currentGame.time})
-            
-           
-
-
-
-            
-
+                return jsonify({'time': currentGame.time})
     else:
         print(runningGames.keys())
         return "Error: invalid game id"
 
-@app.route()
+@app.route('/stream', methods = ['GET'])
 def stream():
     def emitter():
         pubsub = R.pubsub()
         pubsub.subscribe('mine')
-        for message
+        # for message
 
 
 """
