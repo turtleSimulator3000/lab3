@@ -2,6 +2,12 @@ from flask import Flask, render_template, request, send_file, redirect, jsonify
 import uuid
 app = Flask(__name__)
 from static.games.minesweeper.minesweeper import MineSweeper
+import redis
+R = redis.StrictRedis()
+try: R.ping()
+except:
+    print('ERROR: No server')
+    R = None
 users = {
     'help': 'me'
 }
@@ -96,6 +102,15 @@ def indexGame(game):
     else:
         print(runningGames.keys())
         return "Error: invalid game id"
+
+@app.route()
+def stream():
+    def emitter():
+        pubsub = R.pubsub()
+        pubsub.subscribe('mine')
+        for message
+
+
 """
 @app.route('/<game>/game', methods = ['POST'])
 def indexGame(game):
